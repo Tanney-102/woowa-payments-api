@@ -1,7 +1,14 @@
 module.exports = {
-  getCardTypes: () => "SELECT * FROM card_type",
+  getCardTypes: (id = "") => {
+    if (id === undefined || id === "") {
+      return "SELECT * FROM card_type";
+    } else {
+      return `SELECT * FROM card_type WHERE id=${id}`;
+    }
+  },
   getCards: () =>
-    "SELECT * FROM cards JOIN card_type ON cards.type = card_type.id",
+    "SELECT *, cards.id AS id, card_type.id AS cardTypeId FROM cards JOIN card_type ON cards.type = card_type.id",
+  getLastIdFromCards: () => "SELECT last_insert_id(id) FROM cards",
   postCard: (card) => `
     INSERT INTO cards (
       type,
@@ -10,17 +17,21 @@ module.exports = {
       expiration_year,
       username,
       secureCode,
-      password
+      password,
+      description
     ) VALUES(
-      ${card.cardTypeId},
+      ${card.cardType.id},
       ${card.cardNumbers.join("")},
-      ${card.expirationDate.split("/")[0]},
-      ${card.expirationDate.split("/")[1]},
+      ${card.expirationDate.month},
+      ${card.expirationDate.year},
       "${card.username}",
       ${card.secureCode},
-      ${card.password}
+      ${card.password},
+      "${card.description}"
     );
   `,
+  postCardDescription: (id, description) => `UPDATE cards SET description="${description}" WHERE id=${id}`,
+  deleteCard: (id) => `DELETE FROM cards WHERE id=${id}`,
 };
 
 // {
