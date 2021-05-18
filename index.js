@@ -8,7 +8,7 @@ const connection = mysql.createConnection(dbconfig);
 const app = express();
 
 app.set("port", process.env.PORT || 3001);
-app.use(cors());
+app.use(cors({ origin:  "https://beuccol-react-payment.netlify.app" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
